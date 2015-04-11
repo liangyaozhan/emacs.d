@@ -113,6 +113,9 @@
        (add-to-list 'grep-find-ignored-directories v))
      ))
 
+;;Don't echo passwords when communicating with interactive programs:
+(add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)
+
 (add-hook 'grep-mode-hook (lambda () (toggle-truncate-lines 1)))
 ;;----------------------------------------------------------------------------
 ;; Random line sorting
