@@ -81,7 +81,7 @@
 (require 'init-frame-hooks)
 ;; any file use flyspell should be initialized after init-spelling.el
 ;; actually, I don't know which major-mode use flyspell.
-(require 'init-spelling)
+;;(require 'init-spelling)
 (require 'init-xterm)
 (require 'init-osx-keys)
 (require 'init-gui-frames)
