@@ -78,6 +78,7 @@ If FULL is t, copy full file name."
 ;; end of line for gnuplot-mode
 ;;--------------------------------------------------------------------
 
+(global-set-key (kbd "C-.") 'set-mark-command)
 
 (provide 'lyzh-custom)
 

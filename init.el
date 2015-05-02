@@ -95,7 +95,7 @@
 (require 'init-flymake)
 (require 'init-recentf)
 (require 'init-smex)
-(if *emacs24* (require 'init-helm))
+(require 'init-helm)
 (require 'init-hippie-expand)
 (require 'init-windows)
 (require 'init-sessions)
@@ -107,16 +107,15 @@
 (require 'init-csv)
 (require 'init-erlang)
 (require 'init-javascript)
-(when *emacs24*
-  (require 'init-org)
-  (require 'init-org-mime))
+(require 'init-org)
+(require 'init-org-mime)
 (require 'init-css)
 (require 'init-python-mode)
 (require 'init-haskell)
 (require 'init-ruby-mode)
 (require 'init-lisp)
 (require 'init-elisp)
-(if *emacs24* (require 'init-yasnippet))
+(require 'init-yasnippet)
 ;; Use bookmark instead
 (require 'init-zencoding-mode)
 (require 'init-cc-mode)
@@ -142,13 +141,13 @@
 (require 'init-web-mode)
 (require 'init-sr-speedbar)
 (require 'init-slime)
-(when *emacs24* (require 'init-company))
+(require 'init-company)
 (require 'init-stripe-buffer)
 (require 'init-eim) ;;  cannot be idle-required
 (require 'init-hs-minor-mode)
 ;; need statistics of keyfreq asap
 (require 'init-keyfreq)
-(if *emacs24* (require 'init-projectile))
+(require 'init-projectile)
 
 ;; misc has some crucial tools I need immediately
 (require 'init-misc)
@@ -183,14 +182,14 @@
 ;;----------------------------------------------------------------------------
 (require 'init-locales)
 
+(require 'lyzh-custom)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(company-clang-arguments (quote ("")))
  '(company-clang-insert-arguments t)
- '(company-dabbrev-code-time-limit 0.3)
  '(session-use-package t nil (session)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -198,14 +197,3 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(window-numbering-face ((t (:foreground "DeepPink" :underline "DeepPink" :weight bold))) t))
- ;;; Local Variables:
-;;; no-byte-compile: t
-;;; End:
-(put 'erase-buffer 'disabled nil)
-
-(require 'lyzh-custom)
-(require 'wubi)
-
-(register-input-method "chinese-wubi" "Chinese-GB" 'quail-use-package "wubi" "wubi")
-(wubi-load-local-phrases)
-(setq default-input-method "chinese-wubi")
