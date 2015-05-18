@@ -29,7 +29,7 @@
      (setq company-show-numbers t)
      (setq company-begin-commands '(self-insert-command))
      (setq company-idle-delay 0.2)
-     (setq company-clang-insert-arguments nil)
+     (setq company-clang-insert-arguments t)
      ))
 
 ;; company should be case sensitive
