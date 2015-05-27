@@ -1,6 +1,6 @@
 ;;; helm-eshell.el --- pcomplete and eshell completion for helm. -*- lexical-binding: t -*-
 
-;; Copyright (C) 2012 ~ 2014 Thierry Volpiatto <thierry.volpiatto@gmail.com>
+;; Copyright (C) 2012 ~ 2015 Thierry Volpiatto <thierry.volpiatto@gmail.com>
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -174,15 +174,25 @@ The function that call this should set `helm-ec-target' to thing at point."
          (beg (save-excursion (eshell-bol) (point)))
          (args (catch 'eshell-incomplete
                  (eshell-parse-arguments beg end)))
+<<<<<<< HEAD
          ;; Use thing-at-point instead of last args value
          ;; to exclude possible delimiters e.g "(".
          (target (thing-at-point 'symbol))
+=======
+         (target
+          (or (and (looking-back " " (1- (point))) " ")
+              (buffer-substring-no-properties
+               (save-excursion
+                 (eshell-backward-argument 1) (point))
+               end)))
+>>>>>>> b47c39ee02602f07654bef18fd82c21154b564cc
          (first (car args)) ; Maybe lisp delimiter "(".
          last) ; Will be the last but parsed by pcomplete.
     (setq helm-ec-target (or target " ")
           end (point)
           ;; Reset beg for `with-helm-show-completion'.
-          beg (or (and target (- end (length target)))
+          beg (or (and target (not (string= target " "))
+                       (- end (length target)))
                   ;; Nothing at point.
                   (progn (insert " ") (point))))
     (cond ((eq first ?\()
@@ -222,7 +232,7 @@ The function that call this should set `helm-ec-target' to thing at point."
                  :resume 'noresume
                  :input input))
       (when (and flag-empty
-                 (looking-back " "))
+                 (looking-back " " (1- (point))))
         (delete-char -1)))))
 
 (provide 'helm-eshell)

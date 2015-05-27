@@ -1,6 +1,6 @@
 ;;; helm-config.el --- Applications library for `helm.el' -*- lexical-binding: t -*-
 
-;; Copyright (C) 2012 ~ 2014 Thierry Volpiatto <thierry.volpiatto@gmail.com>
+;; Copyright (C) 2012 ~ 2015 Thierry Volpiatto <thierry.volpiatto@gmail.com>
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -198,6 +198,7 @@
      ("(\\<\\(helm-while-no-input\\)\\>" 1 font-lock-keyword-face)
      ("(\\<\\(helm-aif\\)\\>" 1 font-lock-keyword-face))))
 
+<<<<<<< HEAD
 ;;; Compatibility emacs-24.4+
 ;; Inlined from Emacs trunk.
 (defalias 'function-put
@@ -1722,6 +1723,14 @@ http://www.emacswiki.org/emacs/download/yaoddmuse.el
 ;;;***
 
 ;;; End of automatically extracted autoloads.
+=======
+
+;;; Load the autoload file
+;;  It should have been generated either by
+;;  package.el or the make file.
+
+(load "helm-autoloads" nil t)
+>>>>>>> b47c39ee02602f07654bef18fd82c21154b564cc
 
 (provide 'helm-config)
 

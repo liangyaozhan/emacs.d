@@ -1,26 +1,49 @@
-(defun my-yas-reload-all ()
-  (interactive)
-  (unless (featurep 'yasnippet) (require 'yasnippet))
-  (yas-compile-directory (file-truename "~/.emacs.d/snippets"))
-  (yas-reload-all))
+;; loading yasnippet will slow the startup
+;; but it's necessary cost
+(require 'yasnippet)
 
-(defun my-yas-expand ()
-  (interactive)
-  (unless (bound-and-true-p yas-global-mode)
-    (yas-global-mode 1))
+;; my private snippets, should be placed before enabling yasnippet
+(setq my-yasnippets (expand-file-name "~/my-yasnippets"))
+(if (and  (file-exists-p my-yasnippets) (not (member my-yasnippets yas-snippet-dirs)))
+	(add-to-list 'yas-snippet-dirs my-yasnippets))
 
-  (if (buffer-file-name)
-      (let ((ext (car (cdr (split-string (buffer-file-name) "\\."))) )
-            (old-yas-flag yas-indent-line))
-        (if (or (string= ext "ftl") (string= ext "jsp"))
-          (setq yas-indent-line nil))
-        (yas-expand)
-        ;; restore the flag
-        (setq yas-indent-line old-yas-flag))
-    (yas-expand)))
+(yas-global-mode 1)
 
-;; default TAB key is occupied by auto-complete
-(global-set-key (kbd "C-c k") 'my-yas-expand)
+(defun my-yas-get-first-name-from-to-field ()
+  (let ((rlt "AGENT_NAME") str)
+    (save-excursion
+      (goto-char (point-min))
+      ;; first line in email could be some hidden line containing NO to field
+      (setq str (buffer-substring-no-properties (point-min) (point-max))))
+    (message "str=%s" str)
+    (if (string-match "^To: \"\\([^ ,]+\\)" str)
+        (setq rlt (match-string 1 str)))
+    ;; (message "rlt=%s" rlt)
+	rlt))
+
+(defun my-yas-camelcase-to-string-list (str)
+  "Convert camelcase string into string list"
+  (let ((old-case case-fold-search)
+        rlt)
+    (setq case-fold-search nil)
+    (setq rlt (replace-regexp-in-string "\\([A-Z]+\\)" " \\1" str t))
+    (setq rlt (replace-regexp-in-string "\\([A-Z]+\\)\\([A-Z][a-z]+\\)" "\\1 \\2" rlt t))
+    ;; restore case-fold-search
+    (setq case-fold-search old-case)
+    (split-string rlt " ")))
+
+(defun my-yas-camelcase-to-downcase (str)
+  (let ((l (my-yas-camelcase-to-string-list str))
+        (old-case case-fold-search)
+        rlt)
+    (setq case-fold-search nil)
+    (setq rlt (mapcar (lambda (elem)
+                        (if (string-match "^[A-Z]+$" elem)
+                            elem
+                          (downcase elem))
+                        ) l))
+    (setq case-fold-search old-case)
+    (mapconcat 'identity rlt " ")))
 
 (autoload 'snippet-mode "yasnippet" "")
 (add-to-list 'auto-mode-alist '("\\.yasnippet\\'" . snippet-mode))
@@ -29,21 +52,17 @@
   '(progn
      ;; http://stackoverflow.com/questions/7619640/emacs-latex-yasnippet-why-are-newlines-inserted-after-a-snippet
      (setq-default mode-require-final-newline nil)
-     ;; my private snippets
-     (setq my-yasnippets (expand-file-name "~/my-yasnippets"))
-     (if (and  (file-exists-p my-yasnippets) (not (member my-yasnippets yas/snippet-dirs)))
-         (add-to-list 'yas/snippet-dirs my-yasnippets))
-     ;; (message "yas/snippet-dirs=%s" (mapconcat 'identity yas-snippet-dirs ":"))
+     ;; (message "yas-snippet-dirs=%s" (mapconcat 'identity yas-snippet-dirs ":"))
 
      ;; default hotkey `C-c C-s` is still valid
      ;; (global-set-key (kbd "C-c l") 'yas-insert-snippet)
-     ;; give yas/dropdown-prompt in yas/prompt-functions a chance
+     ;; give yas-dropdown-prompt in yas/prompt-functions a chance
      (require 'dropdown-list)
      (setq yas-prompt-functions '(yas-dropdown-prompt
                                   yas-ido-prompt
                                   yas-completing-prompt))
 
-     ;; use yas/completing-prompt when ONLY when `M-x yas-insert-snippet'
+     ;; use yas-completing-prompt when ONLY when `M-x yas-insert-snippet'
      ;; thanks to capitaomorte for providing the trick.
      (defadvice yas-insert-snippet (around use-completing-prompt activate)
        "Use `yas-completing-prompt' for `yas-prompt-functions' but only here..."

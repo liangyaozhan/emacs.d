@@ -1,9 +1,9 @@
-* Diffrence from redguardtoo/emacs.d
-I don't want to use evil so I create a branch 'lyzh' without evil plugin enabled.
 * Before start
 Please read below checklist at least once:
-- I recommend Emacs *24.3.1* or *24.4*
 - [[https://github.com/redguardtoo/emacs.d/issues/169][You can make this setup more stable]]
+- I recommend Emacs *24.3.1* or *24.4*
+- Tested with v24.3.1, v24.4, v24.5 on *ALL* platforms (Linux/Windows/Cygwin/Mac)
+- Check section "About Emacs 23" if you uses Emacs 23.4
 - Please read FAQ to disable default [[http://www.vim.org][Vim]] key bindings
 - Packages from [[http://melpa.org][melpa-unstable]] are *invisible* by default. Modify variable *melpa-include-packages* in init-elpa.el if you need package from melpa-unstable
 - Other issues are covered in FAQ
@@ -15,8 +15,6 @@ Please read below checklist at least once:
 - Optimized for cross-platform C++ development
 - Real time HTML syntax checker
 - I do *NOT* re-define key bindings, so original key bindings are still there
-- Tested with v24.3.1, v24.4 on *ALL* platforms (Linux/Windows/Cygwin/Mac)
-- Check section "About Emacs 23" if you uses Emacs 23.4
 * Installation
 ** Minimum installation
 Most users should follow the section "Install in normal way".
@@ -27,7 +25,7 @@ You need the section "Install stable version in easiest way" IF and ONLY IF:
 *** Install in normal way
 Please remove the file "~/.emacs.d/init.el" ("~" means the parent directory of your ".emacs.d").
 
-Uninstall any package which not located in "~/.emacs.d". For example, run "apt-get autoremove emacs-w3m" on Debian/Ubuntu. It's because all packages will be placed at "~/.emacs.d" from now on.
+Uninstall any package which not located in "~/.emacs.d". For example, run "apt-get autoremove emacs-w3m" on Debian/Ubuntu. All packages will be placed at "~/.emacs.d" from now on.
 
 Download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][latest setup]] and extract its content into "~/.emacs.d".
 
@@ -37,22 +35,13 @@ If you've installed [[http://git-scm.com/][Git]], run command `cd ~; git clone h
 
 Ensure that the init.el contained in this repo ends up at ~/.emacs.d/init.el.
 
-You can use *stable* version of my setup. Stable version has [[https://github.com/redguardtoo/emacs.d/issues/169][been regression tested by volunteers]] from time to time. "cd ~/.emacs.d/;git checkout stable" to get the stable version.
-
-You *possibly* need run below command at the terminal at least once to update the content from package repositories:
-#+BEGIN_SRC elisp
-emacs -nw --batch -l ~/.emacs.d/init.el -f package-refresh-contents
-#+END_SRC
-
-The command "package-refresh-content" will fetch the latest package list from remote servers. It has to be done manually. It's not reasonable to *automatically* fetch the list during a text editor startup. 
-
 *** Install stable version in easiest way (OPTIONAL)
 You don't need git or network any more. All you need are only two zip files.
 
 Here are the *exact steps* to follow:
 - Remove the file "~/.emacs".
 - Download https://github.com/redguardtoo/emacs.d/archive/1.2.zip
-- Extract its content into empty directory "~/.emacs.d" ("~" means HOME directory). After extraction, there will be a file named "init.el" in "~/.emacs.d"
+- Extract its content into empty directory "~/.emacs.d" ("~" means home directory, the environment variable HOME contains the path of home directory). After extraction, there will be a file named "init.el" in "~/.emacs.d"
 - Download [[https://github.com/redguardtoo/myelpa/archive/1.2.zip]]
 - Extract the zip somewhere, say "~/projs/myelpa".
 - Double check that there is a file named "archive-contents" in the directory "~/projs/myelpa"
@@ -169,7 +158,7 @@ Read wikipedia in order to know,
 - What is environment variable
 - What is pipe, stdout, stdin
 *** Step 2, read official tutorial at least once
-Press "C-h t" ("C" means Ctrl) to read bundled tutorial.
+Press "C-h t" ("C" means Ctrl key, "M" means Alt key) to read bundled tutorial. 
 
 At minimum you need know:
 - How to move cursor
@@ -191,7 +180,7 @@ Please remove bundled emacs 22 at first!
 
 You may need remove the obsolete ctags/etags too.
 
-In shell, run command:
+To find out the version of your Emacs/Ctags, please run below command in shell:
 #+begin_src bash
 emacs --version
 ctags --version
@@ -201,11 +190,31 @@ Some packages (Evil, Helm, Web-mode ...) are so important to my workflow that I 
 
 Those packages are placed at "~/.emacs.d/site-lisp".
 
-They will not be upgraded through ELPA automatically.
+They will not be upgraded through ELPA automatically unless you delete corresponding folders at "~/.emacs.d/site-lisp".
+** Customize global variables
+Some variables are hard coded in this setup so you cannot "M-x customize" to modify them.
+
+So you have to modify it by tweaking Emacs Lisp code.
+
+Here are the steps:
+- Find the variable description by "M-x customize". The description is "Company Clang Insert Arguments", for example
+- Search text "company-clang-insert-argument" in files in ~/.emacs.d/lisp/
+- Find "init-company.el" and modify company-clang-insert-argument's value
+
+BTW, please *read my comments* above the code at first.
+** Open file with Ido
+If you press `C-x C-f` to open a file, [[http://emacswiki.org/emacs/InteractivelyDoThings][Ido]] will show the completions.
+
+You can keep pressing `C-f` to ignore the completions and input path manually.
 ** C++ developers?
 You need set up the directories to seach C++ header files. Please see the section `clang`.
 ** Use Emacs on Windows?
 I strongly suggest [[http://www.cygwin.com/][Cygwin]]. But the setup is still usable in native windows version if you set up *environment variable HOME*.
+** Yasnippet key bindings
+Instead of "M-x yas-expand", you can use hotkey "C-c k" globally and "M-j" in evil-insert-mode.
+
+I don't suggest use default TAB key to expand snippet because TAB keys is used by other plugins
+
 ** [[http://melpa.org][MELPA]] does not include the package?
 If a package is not installable through MELPA, you can place its source code at "~/.emacs.d/site-lisp" instead. There are already some samples there.
 ** Non-English users?
@@ -280,13 +289,13 @@ git revert commit-2014-12-01
 git revert commit-2014-11-01
 #+end_src
 
-** Chinese IME
-By default, the word files path is at "~/.eim/py.txt". I put it out of the emacs setup folder in order to protect my privacy.
+** Chinese Input Method Editor
+By default, the word files path is at "~/.eim/py.txt". I place it out of the emacs root folder in order to protect my privacy.
 
 The path can be changed in init-eim.el.
 
-A sample py.txt can be downloaded [[https://gist.githubusercontent.com/redguardtoo/8dae2cd040996089cd61/raw/69f29362fdf880b8428012a4b5057d8dc6f5fc70/py.txt][HERE]].
-** Install Emacs at HOME directory
+A sample file can be downloaded [[https://github.com/tumashu/chinese-pyim-bigdict/raw/gh-pages/pyim-bigdict.pyim][HERE]]. After downloading, rename it to py.txt.
+** Install Emacs at home directory
 Run below commands:
 #+begin_src sh
 mkdir -p ~/tmp;
@@ -298,6 +307,9 @@ rm -rf ~/myemacs/24.3/*;
 #+end_src
 
 Feel free to replace 24.3 with other version number.
+* Tips
+- Never turn off any bundled mode if it's on by default. Future version of Emacs may assume it's on. Tweak its flag in mode hook instead!
+- Git skills are extremely useful for maintainting your emacs.d in the long term
 * Report bug
 Check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first.
 
@@ -332,4 +344,4 @@ Here are the steps to use that setup:
 
 Since most third party plugins don't support Emacs 23 any more. I strongly recommend you upgrading to Emacs 24 instead!
 
-Emacs is *portalbe* on any platform. So you can install Emacs even when you are not root of the Linux server. Please read previous "Install Emacs at HOME directory" for HOW.
+Emacs is *portalbe* on any platform. So you can install Emacs even when you are not root of the Linux server. Please read previous "Install Emacs at home directory" for HOW.

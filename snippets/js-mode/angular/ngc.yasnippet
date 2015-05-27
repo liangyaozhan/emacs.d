@@ -2,10 +2,18 @@
 # name: angular.controller
 # key: acontroller
 # --
+<<<<<<< HEAD:snippets/js-mode/angular/ngc.yasnippet
 app.controller('${1:MyController}', function ($scope, ${2:$http}) {
+=======
+angular.module('myApp').controller('${1:MyController}', ['$scope', '${2:$(yas/substr yas-text "[^ ]*")}', function ($scope, ${2:$http}) {
+>>>>>>> b47c39ee02602f07654bef18fd82c21154b564cc:snippets/js-mode/angular/controller.yasnippet
   console.log('${1:$(yas/substr yas-text "[^ ]*")} registered');
   var that = this;
   $scope.fn1 = function () {
     $0
   };
+<<<<<<< HEAD:snippets/js-mode/angular/ngc.yasnippet
 });
+=======
+}]);
+>>>>>>> b47c39ee02602f07654bef18fd82c21154b564cc:snippets/js-mode/angular/controller.yasnippet

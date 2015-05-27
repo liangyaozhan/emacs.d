@@ -1,16 +1,10 @@
-;; looks nodejs is more popular, if you prefer rhino, change to "js"
-(setq inferior-js-program-command "node --interactive")
-
-(require 'js-comint)
-;; if use node.js, we need nice output
-(setenv "NODE_NO_READLINE" "1")
-
 ;; may be in an arbitrary order
 (eval-when-compile (require 'cl))
 
 ;; json
 (setq auto-mode-alist (cons '("\\.json$" . json-mode) auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.jason$" . json-mode) auto-mode-alist))
+(setq auto-mode-alist (cons '("\\.jshintrc$" . json-mode) auto-mode-alist))
 
 ;; {{ js2-mode or javascript-mode
 (setq js2-use-font-lock-faces t
@@ -23,7 +17,9 @@
 
 (setq javascript-common-imenu-regex-list
       '(("Controller" "[. \t]controller([ \t]*['\"]\\([^'\"]+\\)" 1)
+        ("Controller" "[. \t]controllerAs:[ \t]*['\"]\\([^'\"]+\\)" 1)
         ("Filter" "[. \t]filter([ \t]*['\"]\\([^'\"]+\\)" 1)
+        ("State" "[. \t]state([ \t]*['\"]\\([^'\"]+\\)" 1)
         ("Factory" "[. \t]factory([ \t]*['\"]\\([^'\"]+\\)" 1)
         ("Service" "[. \t]service([ \t]*['\"]\\([^'\"]+\\)" 1)
         ("Module" "[. \t]module([ \t]*['\"]\\([a-zA-Z0-9_\.]+\\)" 1)
@@ -46,26 +42,13 @@
   (save-excursion
     (imenu--generic-function javascript-common-imenu-regex-list)))
 
-(defun flymake-jshint-init ()
-  (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                     'flymake-create-temp-inplace))
-         (local-file (file-relative-name
-                      temp-file
-                      (file-name-directory buffer-file-name)))
-         (arglist (list local-file)))
-    (list "jshint" arglist)))
-
 (defun mo-js-mode-hook ()
   (setq imenu-create-index-function 'mo-js-imenu-make-index)
-  (setq flymake-err-line-patterns
-        (cons '(".*: line \\([[:digit:]]+\\), col \\([[:digit:]]+\\), \\(.*\\)$"
-                nil 1 2 3)
-              flymake-err-line-patterns))
-
   ;; https://github.com/illusori/emacs-flymake
   ;; javascript support is out of the box
-  (add-to-list 'flymake-allowed-file-name-masks
-               '("\\.json\\'" flymake-javascript-init))
+  ;; DONOT jslint json
+  ;; (add-to-list 'flymake-allowed-file-name-masks
+  ;;              '("\\.json\\'" flymake-javascript-init))
   (flymake-mode 1))
 
 (add-hook 'js-mode-hook 'mo-js-mode-hook)
@@ -205,24 +188,33 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
 ;; }}
 
 (defun my-js2-mode-setup()
+  ;; looks nodejs is more popular, if you prefer rhino, change to "js"
+  (setq inferior-js-program-command "node --interactive")
+  (require 'js-comint)
+  ;; if use node.js, we need nice output
+  (setenv "NODE_NO_READLINE" "1")
   (js2-imenu-extras-mode)
   (setq mode-name "JS2")
+  (flymake-mode -1)
   (require 'js-doc)
   (define-key js2-mode-map "\C-cd" 'js-doc-insert-function-doc)
   (define-key js2-mode-map "@" 'js-doc-insert-tag))
 
+(autoload 'js2-mode "js2-mode" nil t)
+(add-hook 'js2-mode-hook 'my-js2-mode-setup)
+
 (cond
- ((and (>= emacs-major-version 24) (>= emacs-minor-version 1) (not *no-memory*))
+ ((not *no-memory*)
   (setq auto-mode-alist (cons '("\\.js\\(\\.erb\\)?\\'" . js2-mode) auto-mode-alist))
-  (autoload 'js2-mode "js2-mode" nil t)
-  (add-hook 'js2-mode-hook 'my-js2-mode-setup)
+  (setq auto-mode-alist (cons '("\\.ts\\'" . js2-mode) auto-mode-alist))
   (add-to-list 'interpreter-mode-alist (cons "node" 'js2-mode)))
  (t
   (setq auto-mode-alist (cons '("\\.js\\(\\.erb\\)?\\'" . js-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.ts\\'" . js-mode) auto-mode-alist))
   ))
 ;; }}
 
-(if *emacs24* (add-hook 'coffee-mode-hook 'flymake-coffee-load))
+(add-hook 'coffee-mode-hook 'flymake-coffee-load)
 
 ;; @see https://github.com/Sterlingg/json-snatcher
 (autoload 'jsons-print-path "json-snatcher" nil t)
@@ -261,6 +253,5 @@ sudo pip install jsbeautifier"
                        (if (string-match "/\\* *global *\\(.*?\\) *\\*/" btext) (match-string-no-properties 1 btext) "")
                        " *, *" t))
                 ))))
-
 
 (provide 'init-javascript)

@@ -1,6 +1,6 @@
 ;;; helm-grep.el --- Helm Incremental Grep. -*- lexical-binding: t -*-
 
-;; Copyright (C) 2012 ~ 2014 Thierry Volpiatto <thierry.volpiatto@gmail.com>
+;; Copyright (C) 2012 ~ 2015 Thierry Volpiatto <thierry.volpiatto@gmail.com>
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -209,6 +209,10 @@ If set to nil `doc-view-mode' will be used instead of an external command."
     (define-key map (kbd "<C-up>")   'helm-grep-mode-jump-other-window-backward)
     (define-key map (kbd "<M-down>") 'helm-gm-next-file)
     (define-key map (kbd "<M-up>")   'helm-gm-precedent-file)
+    (define-key map (kbd "M-n")      'helm-grep-mode-jump-other-window-forward)
+    (define-key map (kbd "M-p")      'helm-grep-mode-jump-other-window-backward)
+    (define-key map (kbd "M-N")      'helm-gm-next-file)
+    (define-key map (kbd "M-P")      'helm-gm-precedent-file)
     map))
 
 
@@ -308,9 +312,14 @@ It is intended to use as a let-bound variable, DON'T set this globaly.")
                 (string= (helm-grep-command t) helm-ack-grep-executable))))))
 
 (defun helm-grep--prepare-cmd-line (only-files &optional include zgrep)
-  (let* ((default-directory (or helm-default-directory
+  (let* ((default-directory (or (helm-default-directory)
                                 (expand-file-name helm-ff-default-directory)))
+<<<<<<< HEAD
          (fnargs            (helm-grep-prepare-candidates only-files))
+=======
+         (fnargs            (helm-grep-prepare-candidates
+                             only-files default-directory))
+>>>>>>> b47c39ee02602f07654bef18fd82c21154b564cc
          (ignored-files     (unless (helm-grep-use-ack-p)
                               (mapconcat
                                #'(lambda (x)
@@ -353,7 +362,13 @@ It is intended to use as a let-bound variable, DON'T set this globaly.")
 
 (defun helm-grep-init (cmd-line)
   "Start an asynchronous grep process with CMD-LINE using ZGREP if non--nil."
+<<<<<<< HEAD
   (let* ((zgrep (string-match "\\`zgrep" cmd-line))
+=======
+  (let* ((default-directory (or (expand-file-name helm-ff-default-directory)
+                                (helm-default-directory)))
+         (zgrep (string-match "\\`zgrep" cmd-line))
+>>>>>>> b47c39ee02602f07654bef18fd82c21154b564cc
          ;; Use pipe only with grep, zgrep or git-grep.
          (process-connection-type (and (not zgrep) (helm-grep-use-ack-p)))
          (tramp-verbose helm-tramp-verbose))
@@ -677,10 +692,8 @@ Special commands:
 ;;;###autoload
 (defun helm-grep-mode-jump ()
   (interactive)
-  (let ((candidate (buffer-substring (point-at-bol) (point-at-eol))))
-    (condition-case nil
-        (progn (helm-grep-action candidate) (delete-other-windows))
-      (error nil))))
+  (helm-grep-action
+   (buffer-substring (point-at-bol) (point-at-eol))))
 
 (defun helm-grep-mode-jump-other-window-1 (arg)
   (let ((candidate (buffer-substring (point-at-bol) (point-at-eol))))
@@ -800,7 +813,7 @@ These extensions will be added to command line with --include arg of grep."
 ;;
 ;;
 (defvar helm-source-grep nil)
-(defun helm-do-grep-1 (targets &optional recurse zgrep exts)
+(defun helm-do-grep-1 (targets &optional recurse zgrep exts default-input)
   "Launch grep on a list of TARGETS files.
 When RECURSE is given use -r option of grep and prompt user
 to set the --include args of grep.
@@ -897,8 +910,13 @@ in recurse, search being made on `helm-zgrep-file-extension-regexp'."
     (helm
      :sources '(helm-source-grep)
      :buffer (format "*helm %s*" (if zgrep "zgrep" (helm-grep-command recurse)))
+<<<<<<< HEAD
      :default-directory helm-grep-last-default-directory
      :keymap helm-grep-map ; [1]
+=======
+     :default default-input
+     :keymap helm-grep-map
+>>>>>>> b47c39ee02602f07654bef18fd82c21154b564cc
      :history 'helm-grep-history
      :truncate-lines t)))
 
@@ -942,7 +960,14 @@ in recurse, search being made on `helm-zgrep-file-extension-regexp'."
 (defun helm-grep--filter-candidate-1 (candidate &optional dir)
   (let* ((root   (or dir (and helm-grep-default-directory-fn
                               (funcall helm-grep-default-directory-fn))))
+<<<<<<< HEAD
          (split  (helm-grep-split-line candidate))
+=======
+         ansi-color-context ; seems this avoid non--translated fname entries.
+         (ansi-p (string-match-p ansi-color-regexp candidate))
+         (line   (if ansi-p (ansi-color-apply candidate) candidate))
+         (split  (helm-grep-split-line line))
+>>>>>>> b47c39ee02602f07654bef18fd82c21154b564cc
          (fname  (if (and root split)
                      (expand-file-name (car split) root)
                    (car-safe split)))
@@ -961,7 +986,7 @@ in recurse, search being made on `helm-zgrep-file-extension-regexp'."
   (let ((helm-grep-default-directory-fn
          (or helm-grep-default-directory-fn
              (lambda () (or helm-ff-default-directory
-                            helm-default-directory
+                            (helm-default-directory)
                             default-directory)))))
     (helm-grep--filter-candidate-1 candidate)))
 

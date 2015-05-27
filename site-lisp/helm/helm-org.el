@@ -1,6 +1,6 @@
 ;;; helm-org.el --- Helm for org headlines and keywords completion -*- lexical-binding: t -*-
 
-;; Copyright (C) 2012 ~ 2014 Thierry Volpiatto <thierry.volpiatto@gmail.com>
+;; Copyright (C) 2012 ~ 2015 Thierry Volpiatto <thierry.volpiatto@gmail.com>
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -65,8 +65,43 @@ See http://orgmode.org for the latest version.")
     (org-cut-subtree)
     (helm-goto-line (car lineno-and-content))
     (org-end-of-subtree t t)
+<<<<<<< HEAD
     (let ((org-yank-adjusted-subtrees t))
       (org-yank))))
+=======
+    (org-paste-subtree (+ target-level 1))))
+
+(defun helm-org-get-candidates (filenames min-depth max-depth)
+  (apply #'append
+   (mapcar (lambda (filename)
+             (helm-get-org-candidates-in-file
+              filename min-depth max-depth
+              helm-org-headings-fontify
+              helm-org-headings--nofilename))
+           filenames)))
+
+(defun helm-get-org-candidates-in-file (filename min-depth max-depth
+                                        &optional fontify nofname)
+  (with-current-buffer (pcase filename
+                         ((pred bufferp) filename)
+                         ((pred stringp) (find-file-noselect filename)))
+    (and fontify (jit-lock-fontify-now))
+    (let ((match-fn (if fontify 'match-string 'match-string-no-properties)))
+      (save-excursion
+        (goto-char (point-min))
+        (cl-loop with width = (window-width)
+                 while (re-search-forward org-complex-heading-regexp nil t)
+                 if (let ((num-stars (length (match-string-no-properties 1))))
+                      (and (>= num-stars min-depth) (<= num-stars max-depth)))
+                 collect `(,(let ((heading (funcall match-fn 4))
+                                  (file (unless nofname
+                                          (concat (helm-basename filename) ":")))
+                                  (level (length (match-string-no-properties 1))))
+                              (org-format-outline-path
+                               (append (org-get-outline-path t level heading)
+                                       (list heading)) width file))
+                           . ,(point-marker)))))))
+>>>>>>> b47c39ee02602f07654bef18fd82c21154b564cc
 
 
 ;;; Org keywords
@@ -163,9 +198,17 @@ See http://orgmode.org for the latest version.")
 (defun helm-org-keywords ()
   "Preconfigured `helm' for org keywords."
   (interactive)
+<<<<<<< HEAD
   (cl-assert (boundp 'org-additional-option-like-keywords) nil
              "Helm-org-keyword not supported in %s" emacs-version)
   (helm-other-buffer 'helm-source-org-keywords "*org keywords*"))
+=======
+  (let ((helm-org-headings--nofilename t))
+    (helm :sources (helm-source-org-headings-for-files
+                    (list (current-buffer)))
+          :candidate-number-limit 99999
+          :buffer "*helm org inbuffer*")))
+>>>>>>> b47c39ee02602f07654bef18fd82c21154b564cc
 
 ;;;###autoload
 (defun helm-org-headlines ()

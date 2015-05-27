@@ -5,6 +5,7 @@
 /.session
 /custom.el
 *.elc
+company-statistics-cache.el
 CVS
 .svn
 *_flymake.el
@@ -47,3 +48,5 @@ recentf
 places
 ido.last
 projectile.cache
+.orig
+.unpacked
