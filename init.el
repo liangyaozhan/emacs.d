@@ -120,6 +120,7 @@
 (require 'init-zencoding-mode)
 (require 'init-cc-mode)
 (require 'init-gud)
+
 (require 'init-cmake-mode)
 (require 'init-csharp-mode)
 (require 'init-linum-mode)
@@ -190,6 +191,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(company-clang-insert-arguments t)
+ '(safe-local-variable-values (quote ((ggtags-process-environment))))
  '(session-use-package t nil (session)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -197,3 +199,5 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(window-numbering-face ((t (:foreground "DeepPink" :underline "DeepPink" :weight bold))) t))
+
+
